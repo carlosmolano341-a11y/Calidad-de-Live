@@ -1,0 +1,189 @@
+<!DOCTYPE html> 
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Batallas - Agencia Estelar</title>
+  <!-- EmailJS -->
+  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+  <script>
+    (function() {
+      emailjs.init("PvdlU_qO1uvH3AdHU"); // 👈 tu Public Key de EmailJS
+    })();
+  </script>
+  <style>
+    body {
+      font-family: 'Segoe UI', Arial, sans-serif;
+      background-color: #010101;
+      color: #FFFFFF;
+      margin: 0;
+      padding: 20px;
+      text-align: center;
+    }
+    h1, h2 {
+      color: #69C9D0;
+      margin-bottom: 10px;
+    }
+    button {
+      padding: 12px 20px;
+      margin: 10px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      font-weight: bold;
+      background: linear-gradient(45deg, #69C9D0, #EE1D52);
+      color: #fff;
+      transition: 0.3s;
+    }
+    button:hover {
+      opacity: 0.8;
+      transform: scale(1.05);
+    }
+    .seccion {
+      display: none;
+      margin-top: 20px;
+      text-align: left;
+      max-width: 600px;
+      margin-left: auto;
+      margin-right: auto;
+      padding: 20px;
+      background: #111;
+      border-radius: 12px;
+      box-shadow: 0 0 20px rgba(238,29,82,0.4);
+    }
+    .batalla {
+      border: 2px solid #69C9D0;
+      padding: 15px;
+      margin: 15px 0;
+      border-radius: 10px;
+      background: #222;
+    }
+    input, select {
+      width: 100%;
+      padding: 10px;
+      margin: 8px 0;
+      border-radius: 6px;
+      border: 1px solid #69C9D0;
+      background: #010101;
+      color: #fff;
+    }
+    footer {
+      margin-top: 30px;
+      font-size: 14px;
+      color: #aaa;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>⚔️ Panel de Batallas</h1>
+  <p>Consulta y crea batallas oficiales de la Agencia Estelar</p>
+
+  <!-- Botones principales -->
+  <button onclick="mostrarSeccion('consultar')">Consultar Batallas</button>
+  <button onclick="mostrarSeccion('crear')">Crear Batalla Oficial</button>
+
+  <!-- Sección consultar batallas -->
+  <div id="consultar" class="seccion">
+    <h2>📜 Batallas Disponibles</h2>
+    <div id="lista-batallas"></div>
+  </div>
+
+  <!-- Sección crear batalla -->
+  <div id="crear" class="seccion">
+    <h2>🛡️ Crear Batalla Oficial</h2>
+    <form id="formBatalla">
+
+      <!-- 📅 Calendario -->
+      <label for="dia">📅 Selecciona la fecha:</label>
+      <input type="date" id="dia" name="Dia" required>
+
+      <!-- ⏰ Selector de hora militar -->
+      <label for="hora">⏰ Selecciona la hora:</label>
+      <input type="time" id="hora" name="Hora" required>
+
+      <input type="number" id="diamantes" name="Diamantes" placeholder="Diamantes" required>
+      <input type="text" id="creador" name="Creador" placeholder="Nombre del Creador" required>
+
+      <select id="rondas" name="Rondas">
+        <option value="1">1 Ronda</option>
+        <option value="3">3 Rondas</option>
+      </select>
+
+      <select id="reto" name="Reto">
+        <option value="Con Reto">Con Reto</option>
+        <option value="Sin Reto">Sin Reto</option>
+      </select>
+
+      <select id="potenciadores" name="Potenciadores">
+        <option value="Con Potenciadores">Con Potenciadores</option>
+        <option value="Sin Potenciadores">Sin Potenciadores</option>
+      </select>
+
+      <button type="submit">🚀 Crear Batalla</button>
+    </form>
+  </div>
+
+  <footer>
+    Agencia Estelar © 2025
+  </footer>
+
+  <script>
+    // 👉 Listado manual de batallas
+    const batallas = [
+      { nombre: "Batalla Estelar", fecha: "2025-08-20", diamantes: 500 },
+      { nombre: "Batalla Galáctica", fecha: "2025-08-22", diamantes: 1000 },
+      { nombre: "Batalla Final", fecha: "2025-08-25", diamantes: 2000 },
+    ];
+
+    // Mostrar secciones
+    function mostrarSeccion(id) {
+      document.querySelectorAll(".seccion").forEach(sec => sec.style.display = "none");
+      document.getElementById(id).style.display = "block";
+      if (id === "consultar") cargarBatallas();
+    }
+
+    // Cargar batallas disponibles
+    function cargarBatallas() {
+      const contenedor = document.getElementById("lista-batallas");
+      contenedor.innerHTML = "";
+      batallas.forEach(b => {
+        const div = document.createElement("div");
+        div.classList.add("batalla");
+        div.innerHTML = `
+          <strong>${b.nombre}</strong><br>
+          📅 Fecha: ${b.fecha}<br>
+          💎 Diamantes: ${b.diamantes}<br>
+        `;
+        contenedor.appendChild(div);
+      });
+    }
+
+    // Enviar batalla con EmailJS
+    document.getElementById("formBatalla").addEventListener("submit", function(e) {
+      e.preventDefault();
+      const templateParams = {
+        nombre: document.getElementById("creador").value,
+        actividad: "Batalla Oficial",
+        puntos: document.getElementById("diamantes").value,
+        fecha: document.getElementById("dia").value,
+        hora: document.getElementById("hora").value
+      };
+
+      emailjs.send("service_qra69t6", "template_vgh8ads", templateParams)
+      .then(() => {
+        alert("✅ Batalla creada y enviada por correo.");
+        e.target.reset();
+      })
+      .catch(error => {
+        alert("❌ Error: " + JSON.stringify(error));
+      });
+    });
+  </script>
+</body>
+</html>
+
+
+
+
